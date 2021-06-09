@@ -1,6 +1,7 @@
 ########################################################################################################################################################
 ## July 2019 Michelle Amaral
-## This script performs burden analysis using a sliding window
+## This script performs burden analysis using a sliding window by counting the number of qualifying variants within specifically defined window lengths:
+## 500, 1000, 5000, 10000, 25000, 50000, 1000000
 ## 
 ## To run: python Sliding_Window_Analysis.py filtered_Variant_Counts_for_Chr_22_CADD_15.0_MAF_0.005 chrNum  sizeOfSlide outputDirectory logFile
 ## 
@@ -96,11 +97,12 @@ def add_all_counts(results_dictionary):
 
 ###########################################################################
 ## function to obtain total number of control subjects
+## insert path to subject key
 ###########################################################################
 
 def get_number_controls():
   controlCounter = 0
-  with open('/gpfs/gpfs1/home/mamaral/Pritzker_Whole_Genome/2019_batch_call/Master_key_Jul_18.txt', "r") as subjectKey:
+  with open('', "r") as subjectKey:
     for line in subjectKey:
       split_subjectKey = line.strip().split('\t')
       if split_subjectKey[0].startswith('Use'):
@@ -115,11 +117,12 @@ def get_number_controls():
 
 ###########################################################################
 ## function to obtain total number of case (affected) subjects
+## insert path to subject key
 ###########################################################################
 
 def get_number_cases():
   caseCounter = 0
-  with open('/gpfs/gpfs1/home/mamaral/Pritzker_Whole_Genome/2019_batch_call/Master_key_Jul_18.txt', "r") as subjectKey:
+  with open(' ', "r") as subjectKey:
     for line in subjectKey:
       split_subjectKey = line.strip().split('\t')
       if split_subjectKey[0].startswith('Use'):
@@ -134,7 +137,7 @@ def get_number_cases():
 
 ###########################################################################################################
 ## BODY
-## 
+## Insert path to log file and the input file
 ###########################################################################################################
 # want the variantCount variable to be global
 variantCount = 0
@@ -147,7 +150,7 @@ totalCases = get_number_cases()
 
 # open the log file, which is the output from the filtering script "variant_dictionary.py"
 # extract the count of total variants from the file
-with open ('/gpfs/gpfs1/home/mamaral/Pritzker_Whole_Genome/2019_batch_call/' + logOutputFile, 'r') as logOutput:
+with open (' ' + logOutputFile, 'r') as logOutput:
   for line in logOutput:
     split_the_lines = line.strip().split(' ')
     if split_the_lines[0].startswith('#After'):
@@ -159,7 +162,7 @@ chromosomeLength = locate_chromosome_length( chromosomeNumber )
 theWindowSizes = [500, 1000, 5000, 10000, 25000, 50000, 100000]
 
 for windowSize in theWindowSizes:
-  with open ('/gpfs/gpfs1/home/mamaral/Pritzker_Whole_Genome/2019_batch_call/' + inputFileName, 'r') as countTable:
+  with open (' ', 'r') as countTable:
     countLinesProcessed = 0
     numberOfTests = 0
     main_results_output = 'data_Sliding_Window_Analysis_for_Chr_' + chromosomeNumber + '_Window_' + str(windowSize) + 'bp_SlideSize_' + str(slideSize) + '_CADD_' + CADD + '_MAF_' + MAF
@@ -231,10 +234,7 @@ for windowSize in theWindowSizes:
 
 
 
-######################################## testing below
-
-
-
+######################################## Exercise using code below
 
 #    with open (main_results_output, 'x') as mainOutput:
 #      mainOutput.write('#This is an analysis of the data from: ' + inputFileName + '\n')
