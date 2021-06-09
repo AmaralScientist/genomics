@@ -6,10 +6,6 @@
 ## 
 ## Example for chromosome 22:
 ## python protein_altering_gene_burden_2_variants_per_interval.py big_variant_dict_for_Chr_22_CADD_15.0_MAF_0.005.p 22 . 
-## 
-## 
-## 
-##  
 ##
 ##
 ########################################################################################################################################################
@@ -18,7 +14,6 @@ import sys,re,os
 import pandas as pd
 import numpy as np
 import pickle
-#import scipy.stats as stats
 
 inputFileName = sys.argv[1]
 splitFileName = inputFileName.strip().split('_')
@@ -29,11 +24,6 @@ MAF = splitMAF[0] # from the input file name, parse MAF used for filtering
 chromosomeNumber = sys.argv[2]
 
 OUTPUT_directory = sys.argv[3]
-
-
-###############################################
-## 
-###############################################
 
 def generate_gene_dict(geneRanges, nameOfGenes):
 
@@ -53,7 +43,7 @@ def generate_gene_dict(geneRanges, nameOfGenes):
 #############################################################################################################################################
 
 def process_gene_coordinates(chromosomeNumber):
-  with open('/gpfs/gpfs1/home/mamaral/Pritzker_Whole_Genome/2019_batch_call/Gene_coordinates.txt', "r") as annoFile:
+  with open('Gene_coordinates.txt', "r") as annoFile:
     chr_ranges = []
     gene_names = []
     gene_lengths = []
@@ -88,7 +78,6 @@ def process_gene_coordinates(chromosomeNumber):
     i = 0
 
     while i < (len(gene_names) - 1):
-      #print('I IS THIS ...', i)
 
       if (i+1) == len(gene_names):
         final_chr_ranges.append(final_chr_range)
@@ -104,7 +93,6 @@ def process_gene_coordinates(chromosomeNumber):
         #print('Before inner while loop. Final gene name is: ', gene_names[i])
         while gene_names[i] == gene_names[(i+1)]:
           #print('Yes they equal. Gene_names[i] is: ', gene_names[i], 'Gene_names[i+1] is: ', gene_names[i+1])
-        
           if gene_lengths[i] < gene_lengths[(i+1)]:
             #print('They equal and gene_lengths[i] ', gene_lengths[i], ' is less than ', gene_lengths[(i+1)])
             final_gene_length = gene_lengths[(i+1)]
@@ -114,19 +102,9 @@ def process_gene_coordinates(chromosomeNumber):
           if (i+1) == len(gene_names):
             break
 
-        #print('NOT EQUAL. Gene_names[i] is: ', gene_names[i], 'Gene_names[i+1] is: ', gene_names[i+1], '\n')
-        #print('final chr range is: ', final_chr_range)
-        #print('final gene name is: ', final_gene_name)
         final_chr_ranges.append(final_chr_range)
         final_gene_names.append(final_gene_name)
         i+=1
-
-
-    #print(final_gene_names)
-    #print(final_chr_ranges)
-    #print('length of final chr ranges: ', len(final_chr_ranges))
-    #print('length of final gene_names: ', len(final_gene_names))
-    #print(len(np.unique(final_gene_names)))
 
     emptyDict = generate_gene_dict(final_chr_ranges, final_gene_names)
     return(emptyDict)
@@ -138,7 +116,7 @@ def process_gene_coordinates(chromosomeNumber):
 
 def get_case_control_counts():
   subjectDict = {}
-  with open('/gpfs/gpfs1/home/mamaral/Pritzker_Whole_Genome/2019_batch_call/Master_key_Jul_18.txt', "r") as subjectKey:
+  with open('master_key.txt', "r") as subjectKey:
     for line in subjectKey:
       split_subjectKey = line.strip().split('\t')
       if split_subjectKey[0].startswith('Use'):
@@ -163,7 +141,7 @@ def get_case_control_counts():
 
 def get_case_control_ids():
   subjectDict = {}
-  with open('/gpfs/gpfs1/home/mamaral/Pritzker_Whole_Genome/2019_batch_call/Master_key_Jul_18.txt', "r") as subjectKey:
+  with open('master_key_Jul_18.txt', "r") as subjectKey:
     for line in subjectKey:
       split_subjectKey = line.strip().split('\t')
       if split_subjectKey[0].startswith('Use'):
@@ -261,8 +239,6 @@ for thing in pickleDict:
           #print(type(pickleDict[thing]['subject_ids'][subject]))
           continue
         variantCountDict[k][subject].append(pickleDict[thing]['subject_ids'][subject])
-        #print('ALL THE SUBJECTS: ', rangeDict[k])
-        #print('This subject: ', rangeDict[k][subject], '\n\n\n\n\n')
       else:
         if subject not in badIDs:
           badIDs.append(subject)
