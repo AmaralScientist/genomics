@@ -1,1 +1,1 @@
-# genomics
+# Whole genome sequencing analysis
