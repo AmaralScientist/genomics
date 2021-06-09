@@ -271,17 +271,3 @@ for windowSize in theWindowSizes:
 # [       totalControls - totalsDict[posRange]['Control'], totalCases - totalsDict[posRange]['Case']      ]]
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
