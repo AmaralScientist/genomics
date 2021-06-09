@@ -10,9 +10,6 @@
 ## 
 ## output file contains the name of the previously filtered input file, for example: filtered_Variant_Counts_for_Chr_22_CADD_15.0_MAF_0.005 22 500
 ## 
-##  
-##
-##
 ########################################################################################################################################################
 
 import sys,re,os
