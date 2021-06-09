@@ -1,20 +1,16 @@
-#########################################################################################
+#################################################################################################################################################
 ## Michelle Amaral
 ## February 2020
-## The output of this script is information about variants that contributed to the counts 
-## reported from a protein-altering gene burden test 
+## The output of this script is information about variants that contributed to the counts reported from a protein-altering gene burden test. 
 ##
-## Script needs to be run in the directory you are working from, for example:
-## /gpfs/gpfs1/home/mamaral/Pritzker_Whole_Genome/2019_batch_call/variant_and_genotype_level_filtered/rare_variant_analysis/CADD_15_MAF_0.005
+## Script needs to be run in the current directory you are working from.
 ##
 ## Input to run script is as follows:
-## python Protein_Altering_Gene_Burden_Interrogate_Specific_Variants.py <txt file containing output from Fisher tests R script> <number of lines from R script output file>
+## python Interrogate_Specific_Variants.py <txt file containing output from Fisher tests R script> <number of lines from R script output file>
 ## For example:
-## python Protein_Altering_Gene_Burden_Interrogate_Specific_Variants.py pvals_Protein_Altering_Gene_Burden_CADD_15.0_MAF_0.005_2_variants_per_interval_ethnicity_AA.txt 10
-## 
-## 
+## python Interrogate_Specific_Variants.py pvals_Protein_Altering_Gene_Burden_CADD_15.0_MAF_0.005_2_variants_per_interval_ethnicity_AA.txt 10
 ##
-#########################################################################################
+#################################################################################################################################################
 
 import sys,re,os
 import pickle
@@ -49,7 +45,7 @@ number_of_lines = int(sys.argv[2])
 
 def get_case_control_counts():
   subjectDict = {}
-  with open('/gpfs/gpfs1/home/mamaral/Pritzker_Whole_Genome/2019_batch_call/Master_key_Jul_18.txt', "r") as subjectKey:
+  with open('Master_key.txt', "r") as subjectKey:
     for line in subjectKey:
       split_subjectKey = line.strip().split('\t')
       if split_subjectKey[0].startswith('Use'):
@@ -73,7 +69,6 @@ def get_case_control_counts():
 ## body
 ###########################################################################
 
-#with open('/gpfs/gpfs1/home/mamaral/Pritzker_Whole_Genome/2019_batch_call/variant_and_genotype_level_filtered/rare_variant_analysis/CADD_15_MAF_0.005/' + INPUT_pVals_file, "r") as inputFile:
 with open(INPUT_pVals_file, "r") as inputFile:
   subjectDict = get_case_control_counts()
 
@@ -108,7 +103,8 @@ with open(INPUT_pVals_file, "r") as inputFile:
         if rangeStart < ( store_rangeStart + int( windowSize ) ) and ( store_controlCounts == controlCounts and store_caseCounts == caseCounts ):
           continue
 
-      main_results_output = 'parsed_sliding_window_variants_for_Chr_' + chromosomeNumber + '_Range_' + preRangeStart.strip().split('(')[1] + '_through_' + preRangeStop.strip().split(')')[0] + '_' + windowSize + 'bp_Window_CADD_' + CADD + '_MAF_' + MAF + '_ethnicity_' + input_ethnicity
+      main_results_output = 'parsed_sliding_window_variants_for_Chr_' + chromosomeNumber + '_Range_' + preRangeStart.strip().split('(')[1] + '_through_' + 
+          preRangeStop.strip().split(')')[0] + '_' + windowSize + 'bp_Window_CADD_' + CADD + '_MAF_' + MAF + '_ethnicity_' + input_ethnicity
       print(main_results_output)
 
       fileName = 'big_variant_dict_for_Chr_' + chromosomeNumber + '_CADD_' + CADD + '_MAF_' + MAF + '.p'
@@ -118,10 +114,10 @@ with open(INPUT_pVals_file, "r") as inputFile:
       
 
       with open( main_results_output, 'w' ) as outputFile:
-        outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%("Chr", "Position", "Ref", "Alt", "BatchAC", "GnomadFreq", "Gnomad3Freq", "GnomadFreq_AFR", "Consequence", "AAchange", "CADD", "SubjectID", "Status", "VariantCount", "Ethnicity"))
+        outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%("Chr", "Position", "Ref", "Alt", "BatchAC", "GnomadFreq", "Gnomad3Freq", 
+            "GnomadFreq_AFR", "Consequence", "AAchange", "CADD", "SubjectID", "Status", "VariantCount", "Ethnicity"))
         for thing in pickleDict:
           if int(thing.strip().split('_')[1]) <= rangeStop and int(thing.strip().split('_')[1]) >= rangeStart:
-                #print(thing, pickleDict[thing])
             print('CADD: ', pickleDict[thing]['CADD'])
             print('gnomAD3: ', pickleDict[thing]['gnomAD3']['gnomad3_AF_afr'][0])
             print('Batch allele count: ', pickleDict[thing]['batch_AC'])
@@ -142,19 +138,31 @@ with open(INPUT_pVals_file, "r") as inputFile:
               if input_ethnicity == "AA":
                 if pickleDict[thing]['subject_ids'][subject] != 0 and subject in subjectDict and subjectDict[subject]['ethnicity'] == "Black":
                   print('Subject ID: ', subject, ', Disease status: ', subjectDict[subject], ', Variant count: ', pickleDict[thing]['subject_ids'][subject])
-                  outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(chromosomeNumber, thing.strip().split('_')[1], thing.strip().split('_')[2], thing.strip().split('_')[3], pickleDict[thing]['batch_AC'], pickleDict[thing]['gnomadGe_AF'][0], pickleDict[thing]['gnomAD3']['gnomad3_AF'][0], pickleDict[thing]['gnomAD3']['gnomad3_AF_afr'][0], pickleDict[thing]['Consequence'][0], pickleDict[thing]['Amino_acids'][0], pickleDict[thing]['CADD'], subject, subjectDict[subject]['status'], pickleDict[thing]['subject_ids'][subject], subjectDict[subject]['ethnicity'] ))
+                  outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(chromosomeNumber, thing.strip().split('_')[1], 
+                      thing.strip().split('_')[2], thing.strip().split('_')[3], pickleDict[thing]['batch_AC'], pickleDict[thing]['gnomadGe_AF'][0], 
+                      pickleDict[thing]['gnomAD3']['gnomad3_AF'][0], pickleDict[thing]['gnomAD3']['gnomad3_AF_afr'][0], pickleDict[thing]['Consequence'][0], 
+                      pickleDict[thing]['Amino_acids'][0], pickleDict[thing]['CADD'], subject, subjectDict[subject]['status'], 
+                      pickleDict[thing]['subject_ids'][subject], subjectDict[subject]['ethnicity'] ))
                   measureMultipleVariants.append(subject)
                   measureMultiplePositions.append(thing.strip().split('_')[1])
               if input_ethnicity == "EA":
                 if pickleDict[thing]['subject_ids'][subject] != 0 and subject in subjectDict and subjectDict[subject]['ethnicity'] == "White":
                   print('Subject ID: ', subject, ', Disease status: ', subjectDict[subject], ', Variant count: ', pickleDict[thing]['subject_ids'][subject])
-                  outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(chromosomeNumber, thing.strip().split('_')[1], thing.strip().split('_')[2], thing.strip().split('_')[3], pickleDict[thing]['batch_AC'], pickleDict[thing]['gnomadGe_AF'][0], pickleDict[thing]['gnomAD3']['gnomad3_AF'][0], pickleDict[thing]['gnomAD3']['gnomad3_AF_afr'][0], pickleDict[thing]['Consequence'][0], pickleDict[thing]['Amino_acids'][0], pickleDict[thing]['CADD'], subject, subjectDict[subject]['status'], pickleDict[thing]['subject_ids'][subject], subjectDict[subject]['ethnicity'] ))
+                  outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(chromosomeNumber, thing.strip().split('_')[1], 
+                      thing.strip().split('_')[2], thing.strip().split('_')[3], pickleDict[thing]['batch_AC'], pickleDict[thing]['gnomadGe_AF'][0], 
+                      pickleDict[thing]['gnomAD3']['gnomad3_AF'][0], pickleDict[thing]['gnomAD3']['gnomad3_AF_afr'][0], pickleDict[thing]['Consequence'][0], 
+                      pickleDict[thing]['Amino_acids'][0], pickleDict[thing]['CADD'], subject, subjectDict[subject]['status'], 
+                      pickleDict[thing]['subject_ids'][subject], subjectDict[subject]['ethnicity'] ))
                   measureMultipleVariants.append(subject)
                   measureMultiplePositions.append(thing.strip().split('_')[1])
               if input_ethnicity == "All":
                 if pickleDict[thing]['subject_ids'][subject] != 0 and subject in subjectDict:
                   print('Subject ID: ', subject, ', Disease status: ', subjectDict[subject], ', Variant count: ', pickleDict[thing]['subject_ids'][subject])
-                  outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(chromosomeNumber, thing.strip().split('_')[1], thing.strip().split('_')[2], thing.strip().split('_')[3], pickleDict[thing]['batch_AC'], pickleDict[thing]['gnomadGe_AF'][0], pickleDict[thing]['gnomAD3']['gnomad3_AF'][0], pickleDict[thing]['gnomAD3']['gnomad3_AF_afr'][0], pickleDict[thing]['Consequence'][0], pickleDict[thing]['Amino_acids'][0], pickleDict[thing]['CADD'], subject, subjectDict[subject]['status'], pickleDict[thing]['subject_ids'][subject], subjectDict[subject]['ethnicity'] ))
+                  outputFile.write('%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n'%(chromosomeNumber, 
+                      thing.strip().split('_')[1], thing.strip().split('_')[2], thing.strip().split('_')[3], pickleDict[thing]['batch_AC'], 
+                      pickleDict[thing]['gnomadGe_AF'][0], pickleDict[thing]['gnomAD3']['gnomad3_AF'][0], pickleDict[thing]['gnomAD3']['gnomad3_AF_afr'][0], 
+                      pickleDict[thing]['Consequence'][0], pickleDict[thing]['Amino_acids'][0], pickleDict[thing]['CADD'], subject, subjectDict[subject]['status'], 
+                      pickleDict[thing]['subject_ids'][subject], subjectDict[subject]['ethnicity'] ))
                   measureMultipleVariants.append(subject)
                   measureMultiplePositions.append(thing.strip().split('_')[1])
 
