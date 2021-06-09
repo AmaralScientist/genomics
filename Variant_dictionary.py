@@ -1,11 +1,11 @@
 
 ###############################################################################################################################
 ## November 2019 Michelle Amaral
-## To run: python CBD_variant_dictionary.py CADDforFiltering MAFlowerBound MAFupperBound OUTPUT_directory
+## To run: python Variant_dictionary.py CADDforFiltering MAFlowerBound MAFupperBound OUTPUT_directory
 ## python CBD_variant_dictionary.py 0 0.04 0.75 .
 ## The above example is for CADD greater than 0, and MAF greater than 0.04 but less than 0.75
 ## 
-## Example: python CBD_variant_dictionary.py 0 0.04 0.75 .
+## Example: python Variant_dictionary.py 0 0.04 0.75 .
 ##
 ## first the script creates a dictionary of variants (big_variant_dict) filtered on CADD and MAF; more filtering
 ## criteria can be easily added or changed
@@ -40,8 +40,6 @@ OUTPUT_directory = sys.argv[4]
 
 def multiples_pull_annotations(header, descriptors, annotationList, position, how_many_alts):
   # handles parsing and key, values of variant with multiple alternate alleles and multiple vep annotations per allele
-  #with gzip.open('/gpfs/gpfs2/cooperlab/GRCh37/pritzker/2019_06_vep_annotated/22_fully-annotated.vcf.gz', "rt") as input:
-  #  head = list(islice(input, 324))
   for line in header: 
     line_split = line.split()
     if (line_split[0].startswith('##')) and ("CSQ" in line):
@@ -86,8 +84,6 @@ def multiples_pull_annotations(header, descriptors, annotationList, position, ho
 
 def single_alt_pull_annotations(header, descriptors, annotationList):
 
-  #with gzip.open('/gpfs/gpfs2/cooperlab/GRCh37/pritzker/2019_06_vep_annotated/22_fully-annotated.vcf.gz', "rt") as input:
-    #head = list(islice(input, 324))
   for line in header: 
     line_split = line.split()
     if (line_split[0].startswith('##')) and ("CSQ" in line):
@@ -131,11 +127,9 @@ def check_MAF(annotation_dictionary, num_of_veps, extended_position):  #might no
   try:
     for b in list(range(0, len(num_of_veps), 1)):
       if (annotation_dictionary['gnomadGe_AF'][0] == '.' or annotation_dictionary['gnomadGe_AF'][0] == 'NA' or annotation_dictionary['gnomAD_AF'][0] == '.' or annotation_dictionary['gnomAD_AF'][0] == 'NA' or annotation_dictionary['TOPMed_AF'][0] == '.' or annotation_dictionary['TOPMed_AF'][0] == 'NA'):
-      #if (annotation_dictionary['gnomadGe_AF_AFR'][0] == '.' or annotation_dictionary['gnomadGe_AF_NFE'][0] == '.' or annotation_dictionary['gnomadGe_AF'][0] == '.' or annotation_dictionary['gnomadEx_AF_AFR'][0] == '.' or annotation_dictionary['gnomadEx_AF_NFE'][0] == '.' or annotation_dictionary['gnomadEx_AF'][0] == '.' or annotation_dictionary['umich_Bravo_AF'][0] == '.'):
         return(1) # filter out
       # is the gnomAD frequency less than the filtering threshold (MAF_to_filter)?
-      elif ( lower_MAF_to_filter < float(annotation_dictionary['gnomadGe_AF'][0]) and float(annotation_dictionary['gnomadGe_AF'][0]) < upper_MAF_to_filter ) and ( lower_MAF_to_filter < float(annotation_dictionary['gnomAD_AF'][0]) and float(annotation_dictionary['gnomAD_AF'][0]) < upper_MAF_to_filter ): 
-      #elif (annotation_dictionary['gnomadGe_AF_afr'][0] == 'NA' or float(annotation_dictionary['gnomadGe_AF_afr'][0]) < MAF_to_filter) and (annotation_dictionary['gnomadGe_AF_nfe'][0] == 'NA' or float(annotation_dictionary['gnomadGe_AF_nfe'][0]) < MAF_to_filter) and (annotation_dictionary['gnomadGe_AF'][0] == 'NA' or float(annotation_dictionary['gnomadGe_AF'][0]) < MAF_to_filter) and (annotation_dictionary['gnomAD_AFR_AF'][0] == 'NA' or float(annotation_dictionary['gnomAD_AFR_AF'][0]) < MAF_to_filter) and (annotation_dictionary['gnomAD_NFE_AF'][0] == 'NA' or float(annotation_dictionary['gnomAD_NFE_AF'][0]) < MAF_to_filter) and (annotation_dictionary['gnomAD_AF'][0] == 'NA' or float(annotation_dictionary['gnomAD_AF'][0]) < MAF_to_filter):      
+      elif ( lower_MAF_to_filter < float(annotation_dictionary['gnomadGe_AF'][0]) and float(annotation_dictionary['gnomadGe_AF'][0]) < upper_MAF_to_filter ) and ( lower_MAF_to_filter < float(annotation_dictionary['gnomAD_AF'][0]) and float(annotation_dictionary['gnomAD_AF'][0]) < upper_MAF_to_filter ):
         # if gnomAD frequency is less than threshold, keep the variant if the freq in the Bravo database is 'NA'
         if annotation_dictionary['TOPMed_AF'][0] == 'NA':
           return(1) # filter out
@@ -215,8 +209,6 @@ def get_variant_counts(genotype_element, list_of_sample_ids, allelecount):
         number_of_variants.append(variant_count)
         continue
 
-
-
       if (genotype == '0/1') and (float(total_depth) >= 10) and (int(allele_depth_Alt) != 0) and (int(allele_depth_Alt) >= (int(total_depth)*0.2)):          
         variant_count = 1         
       elif (genotype == '1/1') and (float(total_depth) >= 10) and (int(allele_depth_Alt) >= 8):
@@ -282,41 +274,17 @@ def multiple_alts_get_variant_counts(genotype_element, list_of_sample_ids, allel
     alt_allele_depth = all_allele_depths.split(',')[k]
 
     split_genotype = genotype.split('/')
-    #print(split_genotype)
-    #if '.' in split_genotype or '0|2' in split_genotype or '0|1' in split_genotype:
-    #  variant_count = 'NA'
-    #  number_of_variants.append(variant_count)
-    #  continue
-    
-    #print(genotype_element)
-    #print('\n')
 
     first_genotype = int(split_genotype[0])
     second_genotype = int(split_genotype[1])
 
-    #if genotype == './.':
-    #  variant_count = 'NA'
-      #print(variant_count)
-    #  number_of_variants.append(variant_count)
-    #  continue
-    #else:
-      # check value of first genotype
-    #print('total_depth: ', total_depth)
-    #print(alt_allele_depth)
     if first_genotype == k and (int(total_depth) >= 10) and ( (int(alt_allele_depth) >= (int(total_depth)*0.2)) ):
       first_variant_count = 1
-      #print(extended_position)
-      #print('Subject: ', list_of_sample_ids[i])
-      #print('Genotype: ', genotype_element[i])
     else:
       first_variant_count = 0
-    #print('First variant count: ', first_variant_count)
     # then check value of second genotype
     if second_genotype == k and (float(total_depth) >= 10) and ( (int(alt_allele_depth) >= (int(total_depth)*0.2)) ):
       second_variant_count = 1
-      #print(extended_position)
-      #print('Subject: ', list_of_sample_ids[i])
-      #print('Genotype: ', genotype_element[i])
     else:
       second_variant_count = 0
     #print('Second variant count: ', second_variant_count)
@@ -335,11 +303,12 @@ def multiple_alts_get_variant_counts(genotype_element, list_of_sample_ids, allel
 
 ###########################################################################
 ## function to obtain case / control variant counts at given position
+## insert path to subject key
 ###########################################################################
 
 def get_responder_nonresponder_counts(big_variant_dict):
   subjectDict = {}
-  with open('/gpfs/gpfs1/home/mamaral/CBD/CBDSamples_Master_for_python.txt', "r") as subjectKey:
+  with open(' ', "r") as subjectKey:
     for line in subjectKey:
       split_subjectKey = line.strip().split('\t')
       #print(split_subjectKey)
@@ -366,7 +335,7 @@ def get_responder_nonresponder_counts(big_variant_dict):
 # use chromosome number to gzip.open that chromosome's file
 # for line in input file
 
-with open('/gpfs/gpfs1/home/mamaral/CBD/Genes_of_interest.txt', 'r') as coordinateFile:
+with open(' ', 'r') as coordinateFile:
   for txtLine in coordinateFile:
     big_variant_dict = {}
 
@@ -387,17 +356,11 @@ with open('/gpfs/gpfs1/home/mamaral/CBD/Genes_of_interest.txt', 'r') as coordina
     print(log_output)
 
 
-    with gzip.open('/gpfs/gpfs1/home/mamaral/CBD/chr_' + str(chromosomeOfGene) + '_cbd.annotated.vcf.gz' , "rt") as inputFile:
+    with gzip.open(' ' , "rt") as inputFile:
       with open (log_output, 'a') as logOutput:
         head = list(islice(inputFile, 3599))
 
         for line in inputFile:
-          #print(line)
-          #if countLines % 10000 == 0:
-          #  print('Still working. I am at line: ', countLines)
-            #logOutput.write('Still working. I am at line: ' + str(countLines))
-          
-
           line_split2 = line.strip().split()
           if line_split2[0].startswith('#'):
             samp_ids = [line_split2[i] for i in list(range(9,len(line_split2), 1))]      
@@ -416,17 +379,13 @@ with open('/gpfs/gpfs1/home/mamaral/CBD/Genes_of_interest.txt', 'r') as coordina
 
             info_column = line_split2[7]
             split_genotypes = line_split2[9:len(line_split2)]
-
-            #if countLines % 100 == 0:
-              #print('Still working. I am at line: ', countLines)
-            #print('I am at position: ', position)
             
             # check to see if there are multiple alternate alleles
             ###################
             ## one alt allele
             ###################
             if how_many_alts == 1 and ( position >= geneStartsAt and position <= geneEndsAt ):        
-              countLines = countLines + 1    #########################################################################
+              countLines = countLines + 1    
               extended_position = chromosome + '_' + str(position) + '_' + ref + '_' + alts
               
               sallelecount = re.search('AC=(.*?);', info_column)
@@ -500,7 +459,7 @@ with open('/gpfs/gpfs1/home/mamaral/CBD/Genes_of_interest.txt', 'r') as coordina
                 vepSplitOnComma = VEP.strip().split(',')
 
                 while separate_alts[w] != '*':
-                  countLines = countLines + 1    #########################################################################
+                  countLines = countLines + 1
                   extended_position = chromosome + '_' + str(position) + '_' + ref + '_' + separate_alts[w]
 
                   sallelecount = re.search('AC=(.*?);', info_column)
@@ -554,11 +513,11 @@ with open('/gpfs/gpfs1/home/mamaral/CBD/Genes_of_interest.txt', 'r') as coordina
                     pass
 
                 else:
-                  print('ERROR at line 411')
+                  print('ERROR at line 543')
 
                 # if there are more alleles after the '*' allele, they will enter this while loop
                 while w != how_many_alts:
-                  countLines = countLines + 1    #########################################################################
+                  countLines = countLines + 1
                   extended_position = chromosome + '_' + str(position) + '_' + ref + '_' + separate_alts[w]
                   sallelecount = re.search('AC=(.*?);', info_column)
                   allelecount = sallelecount.group(1)
@@ -623,7 +582,7 @@ with open('/gpfs/gpfs1/home/mamaral/CBD/Genes_of_interest.txt', 'r') as coordina
                 # loop through these multiple alternate alleles
                 for k in list(range(0, how_many_alts, 1)):
                   extended_position = chromosome + '_' + str(position) + '_' + ref + '_' + separate_alts[k]
-                  countLines = countLines + 1    #########################################################################
+                  countLines = countLines + 1
 
                   vepSplitOnComma = VEP.strip().split(',')
 
@@ -726,10 +685,10 @@ with open('/gpfs/gpfs1/home/mamaral/CBD/Genes_of_interest.txt', 'r') as coordina
     ## big_variant_dict now generated, save it for future use
     ###########################################################################
     print('about to pickle dump')
-    toSaveDict = '/gpfs/gpfs1/home/mamaral/CBD/big_variant_dict_for_' + nameOfGene + '_CADD_' + str(CADD_to_filter) + '_MAFgreaterthan_' + str(lower_MAF_to_filter) + '_butLessThan_' + str(upper_MAF_to_filter) + '.p'
+    toSaveDict = 'big_variant_dict_for_' + nameOfGene + '_CADD_' + str(CADD_to_filter) + '_MAFgreaterthan_' + str(lower_MAF_to_filter) + '_butLessThan_' + str(upper_MAF_to_filter) + '.p'
     pickle.dump(big_variant_dict, open(toSaveDict, "wb"))
 
-    #pickle.dump(big_variant_dict, open("/gpfs/gpfs1/home/mamaral/Pritzker_Whole_Genome/2019_batch_call/Chr_22_variant_dict.p", "wb"))
+    
 
     ###########################################################################
     ## big_variant_dict now generated, next count variants in subjects
@@ -790,12 +749,6 @@ with open('/gpfs/gpfs1/home/mamaral/CBD/Genes_of_interest.txt', 'r') as coordina
         logOutput.write('Used and not used equal line count' + '\n')
       else:
         logOutput.write('Used and not used ARE NOT EQUAL TO line count' + '\n')
-
-      # The IDs that should be in badIDs are as follows:
-      # '3436-RMM-0276', 'C1002-KB-0551', '3436-RMM-0337', '3436-RMM-0448'
-      # 'C1002-KB-0497', '3436-RMM-0312', '3436-RMM-0313', 'C1002-KB-0435'
-      # '3436-RMM-0173', '3436-RMM-0095', '3436-RMM-0025', '3436-RMM-0141'
-      #logOutput.write('These are the bad IDs: ' + badIDs)
       logOutput.write('These are the bad IDs: ' + '\n')
       for ids in badIDs:
         logOutput.write('%s\n' % ids)
